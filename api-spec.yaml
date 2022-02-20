@@ -1,0 +1,258 @@
+swagger: "2.0"
+info:
+  version: "1.0.0"
+  title: "Autenticação do Usuário"
+basePath: "/authentication"
+tags:
+  - name: "auth"
+    description: "Microserviço para realizar a autenticação"
+schemes:
+  - "http"
+  - "https"
+parameters:
+  id:
+    name: "user-id"
+    description: "Usuario que está executando a ação"
+    required: true
+    in: "header"
+    type: string
+paths:
+  /v1/login:
+    post:
+      tags:
+        - "auth"
+      summary: "Realiza o login do usuario"
+      description: "Realiza o login do usuario"
+      operationId: "login"
+      parameters:
+        - in: "body"
+          name: "body"
+          description: "Dados necessários para o login"
+          required: true
+          schema:
+            $ref: "#/definitions/LoginRequest"
+      produces:
+        - "application/json"
+      responses:
+        200:
+          description: "Requisição realizada com sucesso"
+          schema:
+            $ref: "#/definitions/UserAuthResponse"
+        400:
+          description: "Requisição com sintaxe incorreta."
+          schema:
+            $ref: "#/definitions/DefaultError"
+        404:
+          description: "Usuário não encontrada."
+          schema:
+            $ref: "#/definitions/DefaultError"
+        500:
+          description: "Erro Interno do Servidor."
+          schema:
+            $ref: "#/definitions/DefaultError"
+  /v1/logout:
+    post:
+      tags:
+        - "auth"
+      summary: "Realiza o logout do usuário"
+      description: "Realiza o logout do usuário"
+      operationId: "logout"
+      parameters:
+        - in: "body"
+          name: "body"
+          description: "Dados necessários para o logout"
+          required: true
+          schema:
+            $ref: "#/definitions/LogoutRequest"
+        - $ref: "#/parameters/id"
+      produces:
+        - "application/json"
+      responses:
+        204:
+          description: "Logout realizado com sucesso"
+        400:
+          description: "Requisição com sintaxe incorreta."
+          schema:
+            $ref: "#/definitions/DefaultError"
+        500:
+          description: "Erro Interno do Servidor."
+          schema:
+            $ref: "#/definitions/DefaultError"
+  /v1/first-password:
+    post:
+      tags:
+        - "auth"
+      summary: "Primeira senha"
+      description: "Primeira senha"
+      operationId: "firstPassword"
+      parameters:
+        - in: "body"
+          name: "body"
+          description: "Dados necessários para primeira senha."
+          required: true
+          schema:
+            $ref: "#/definitions/FirstPasswordRequest"
+      produces:
+        - "application/json"
+      responses:
+        200:
+          description: "Requisição realizada com sucesso"
+          schema:
+            $ref: "#/definitions/UserAuthResponse"
+        400:
+          description: "Requisição com sintaxe incorreta."
+          schema:
+            $ref: "#/definitions/DefaultError"
+        404:
+          description: "Usuário não encontrada."
+          schema:
+            $ref: "#/definitions/DefaultError"
+        500:
+          description: "Erro Interno do Servidor."
+          schema:
+            $ref: "#/definitions/DefaultError"
+  /v1/refresh-token:
+    post:
+      tags:
+        - "auth"
+      summary: "Atualiza o token"
+      description: "Atualiza o token"
+      operationId: "refreshToken"
+      parameters:
+      - in: "body"
+        name: "body"
+        description: "Dados necessários para a solicitação do novo token"
+        required: true
+        schema:
+          $ref: "#/definitions/RefreshTokenRequest"
+      produces:
+        - "application/json"
+      responses:
+        200:
+          description: "Token atualizado"
+          schema:
+            $ref: "#/definitions/RefreshTokenResponse"
+        400:
+          description: "Requisição não encontrada"
+          schema:
+            $ref: "#/definitions/DefaultError"
+        500:
+          description: "Internal server error"
+          schema:
+            $ref: "#/definitions/DefaultError"
+definitions:
+  DefaultError:
+    required:
+      - message
+    properties:
+      message:
+        type: string
+        example: "Mensagem do erro exemplo"
+        description: "Mensagme de erro explicando o motivo da resposta"
+  LoginRequest:
+    required:
+      - email
+      - password
+    type: "object"
+    properties:
+      password:
+        type: "string"
+        example: "*************************"
+      email:
+        type: "string"
+        format: email
+        example: "carlos@gmail.com"
+        description: "E-mail do usuário especificado"
+  FirstPasswordRequest:
+    required:
+      - email
+      - password
+      - confirmationCode
+    type: "object"
+    properties:
+      password:
+        type: "string"
+        example: "minhaSenha"
+      confirmationCode:
+        type: "string"
+        example: JsYUdIfA
+      email:
+        type: "string"
+        format: email
+        example: "carlos@gmail.com"
+        description: "E-mail do usuário especificado"
+  LogoutRequest:
+    required:
+      - accessToken
+    type: "object"
+    properties:
+      accessToken:
+        type: "string"
+        example: eyJraWQiOiJ5Tzd6MVE3a0hOMlI3UGdLMndlMmcxQnNNcEUrWVZCXC9jRTducktoTHFBTT0iLCJhbGciOiJSUzI1NiJ9.eyJzdWIiOiIzYmNjZDZkMC0xNWI1LTQ1NTgtODMyMS1hYTAyNjI1ZWQxN2EiLCJldmVudF9pZCI6ImMzNmVlOTM5LTg1OGEtNDVkYS04YjA3LWNhMDZiMmRhMjE3MSIsInRva2VuX3VzZSI6ImFjY2VzcyIsInNjb3BlIjoiYXdzLmNvZ25pdG8uc2lnbmluLnVzZXIuYWRtaW4iLCJhdXRoX3RpbWUiOjE2MzI4MzQyMTYsImlzcyI6Imh0dHBzOlwvXC9jb2duaXRvLWlkcC51cy13ZXN0LTIuYW1hem9uYXdzLmNvbVwvdXMtd2VzdC0yX2pZbHRuYzFjMCIsImV4cCI6MTYzMjgzNzk4OCwiaWF0IjoxNjMyODM0Mzg4LCJqdGkiOiI5NWVlNTk1NS1iZTNlLTRlZDMtODEyYy1iNGJjZTBhYWY5OGQiLCJjbGllbnRfaWQiOiIzcnA5Ymxkb2FxZW02bGZqM24ydWwxMW1iOSIsInVzZXJuYW1lIjoiM2JjY2Q2ZDAtMTViNS00NTU4LTgzMjEtYWEwMjYyNWVkMTdhIn0.LhIJiXXmgnf5HLwVUo5RvCdYxZtyF7Gizb_N-6Th8SMVPVF0tCI4W5aFe7F1F2BM8dYTw1hp46DYzhv6h16TcFz-kYHZaJkUlqFD3Y86p_rQRcvtSQGFhuzPrUE9wKdvWQiMWL4BK36rXNARvLHna-79yBDxCmTIQaDBjxhqImESCfZ8d1YKXz54lkm6pAqtWHGwyfeTijw0hwH-0ZsVK01dBe8rzRVqbnYOmkoEHikfe5rtzhfzNJJE52Otjf82fUOYGwcc_vOpTBmAAdTcb3u03rWcqi8b1z6a6IbN2GZck0ew6D087C7VXDIPr9xnMIutDJuABnwOsSFQbhZ_xg
+  RefreshTokenRequest:
+    required:
+      - refreshToken
+    type: "object"
+    properties:
+      refreshToken:
+        type: "string"
+        example: "eyJjdHkiOiJKV1QiLCJlbmMiOiJBMjU2R0NNIiwiYWxnIjoiUlNBLU9BRVAifQ.jZm-zxCuYUMiN8Lp41YgOcHBHaw74bfULZOHMX-xDWoTGFHmvK6xyPC2V6ghiwTQF3YguSCJOba3FMlFTxqunrm4Iv6SLgmP4Wt0FICP2WVYLwE-0AMLeJ8fu6mwrm6mBuVFVTdBFY2KL9vZM81tGIId_yb3h7B8HqZAwwPvDni0AizptXRb8G50Dcxdt4HDdMRmmTgj0I370PRxFRthQ3w7oItLs__bhs2i4R-pPHSoSYnGlkdAFQ8ttmqQVuzwOvSE54HyGxTscjdIn7xKzzhrtvKCjOfm9pHtNJ7e52hsZzZbiP4sBg3SL7KG7NqSZeMvkIVcgbef5Oflrql7fw.NA47Bfkscj2qccUN.ZalVAS-A4XopuCLyjQXnmzJ_wZU0sPsK-qefmdfCktz61kc8PW4Obc5Q3GSnZFIU7BwueH6CzfuP4f_RLoL1g3ev5Nd0rckSXyD8xDVVOj238maFhRB5ivxtoP7cEup5oRrNqFpfjxASrhsH8jZZ6IJKTZcoGhzlnUgpaAFpxPvSKiRkJiLJ8nK1hwrXwq9dZ76toio3JgHue9gVVfE6RU3Eklu6TMOWyzneYxikq_7b2DKIutyz0Vx-HrxVaDaB5nKSBS8oKp7ZncEwMC16i7sozxrtvr817WFx4r8GVGTrkF8q1yrRp5OVY_5DYsmwO_uYZ8ri2cG1PPdBKGvgk03C-7PBdrhhyWi_2lh2a1rbXzPMqKhGLoh6TWtTY5Fw5fewWRCpT47xL7c65522t5M6TAMjvsGnClvmjHCWjwQX2L8cYnRnZpX4bS3jK7UTh-RHRdJyByDfnt5UtjQBOeR2Yk1PGOcGKoJKqiN8XZi3_cvowXoJ6jB7a8ArF8rddHH5UOMWKIOqbvFOuQcN6YuszPENfmesJ5uRqNYQ9tmybyGBetvUVJvjNSMy3qqVopp2G9Agqk1aRsbcQg-_kqA7LnWS3synl_vJWXSLgBsAznGkr95TgZJMOdA27udI0nZHevBKx7iFq1qKRs_Z8yKX6rGu0nYzSVk2Ziiu0U6IktXI7J3CqTAo_muI4FwZfMDA6ZzxGsZLs8845dfWC-QrL4pCH_HF7Vz4iiqvFvsstTXJxEazT-L32GMX4hAZJAUgPfn6NzSjfAtxh8CY1Rx9sh7vLi_H-gIEeZQIZvHQXCgMD5mpdO8tDkgxns8iItlBgtO6Na8n1kS9rjh8gQIhZomve7hG9MnSHjZZcMf97f599Nr-hgreZ6VB-R4S9BEnOyer8FQhmKkmnMhWnta9FA6A_1NZ6QmE3SjXTu5ICADa6huwxZdBIliHDNqQ8g-8PZwPeINX2OmU3fg7VN2PiZyErPaBPNGF1YRCbwzr5dkJFhz86yCDr-T2RFh0Gu_WhZVNQldBBq1XbNG3sxx8THkUWzZy7ebqzBWW9ZyH0nXaa7ATvtp0tI2u8HexPlnr7GuCGaZQUlJEx4gJP7PAg27BPbuyhz-1U3Yz9hX7g9m4sj9KYlQLrHqqu-BKbM0yz7nOhnkDHW63EiEjQ8Fu4fu6oVBbbf-oMdFf3TPB26gBZIR8xoFwiwZov9cYmS8uOStcveU0pnQ6peD8nyjXK4m90aciW0fcENyQ8jmGrarh4eteHSogITuaYj2Qs-WA5SJEuhJAfuWychf8nVIXNWwDPIQ32-D7cVNW2LAgppnZ7Py8rWA5qg.KDxhFKTw1mkVgWGoUcKXFQ"
+        description: "Parâmetro refreshToken que foi recebido no objeto de resposta ao realizar o login"
+  UserAuthResponse:
+    required:
+      - id
+      - name
+      - accessToken
+      - expiresIn
+      - refreshToken
+      - idToken
+    properties:
+      id:
+        type: string
+        description: "Informa o id do usuario"
+        example: "b5w40LAWj6zok1DqodRl9XGqPv3aNJZE"
+      name:
+        type: string
+        description: "Informa o nome do usuario"
+        example: "Carlos teste"
+      accessToken:
+        type: string
+        description: "The access token"
+        example: "eyJraWQiOiJ5Tzd6MVE3a0hOMlI3UGdLMndlMmcxQnNNcEUrWVZCXC9jRTducktoTHFBTT0iLCJhbGciOiJSUzI1NiJ9.eyJzdWIiOiIzYmNjZDZkMC0xNWI1LTQ1NTgtODMyMS1hYTAyNjI1ZWQxN2EiLCJldmVudF9pZCI6ImIwMWVmOGRhLWMwOWYtNGY3MS1hOWQ5LTEzZGVlMzk4Yzg2NCIsInRva2VuX3VzZSI6ImFjY2VzcyIsInNjb3BlIjoiYXdzLmNvZ25pdG8uc2lnbmluLnVzZXIuYWRtaW4iLCJhdXRoX3RpbWUiOjE2MzI0OTY1ODcsImlzcyI6Imh0dHBzOlwvXC9jb2duaXRvLWlkcC51cy13ZXN0LTIuYW1hem9uYXdzLmNvbVwvdXMtd2VzdC0yX2pZbHRuYzFjMCIsImV4cCI6MTYzMjUwMDE4NiwiaWF0IjoxNjMyNDk2NTg3LCJqdGkiOiJjMmJiNDAwMy05MjZhLTRmMjMtYTkxYy0xMmYzMzhiMjk3OTAiLCJjbGllbnRfaWQiOiIzcnA5Ymxkb2FxZW02bGZqM24ydWwxMW1iOSIsInVzZXJuYW1lIjoiM2JjY2Q2ZDAtMTViNS00NTU4LTgzMjEtYWEwMjYyNWVkMTdhIn0.Om9ssKVuSJXTIbZHsCKNqCTBTP291h0sJWcr6XbxEp95XDqOqb6keqe0FRZEMtHo6RZA7YE05HUbgE9FkbOOImV68Zf_XjME0OZHJuXnp5IyK3dMha45d5AMz7_zYQbw_Wy24Sy4_ZK9j1knAI7q49tqJ9BkJmU5BYtmff8A0HAkH9u07jBRN0FgFXltVS-5q701GfEY2bsPSa6P8wbxMAAQWWy-hQ1dQHx-KaVtjdpUC0AbzKOBhLcekAO-JTNiIDvaJkgoS3zDGrOjwbJVN1MqtVZ1w3dBKsSsHqGcCPGxBVMeH5okOpHZqD0ZKkdbwBABunerHVn23-OtH6UyxQ"
+      expiresIn:
+        type: number
+        description: "The expiration period of the authentication result in seconds"
+        example: 3600
+      refreshToken:
+        type: string
+        description: "The refresh token"
+        example: "eyJjdHkiOiJKV1QiLCJlbmMiOiJBMjU2R0NNIiwiYWxnIjoiUlNBLU9BRVAifQ.ud10StMHuiCrfMJ6CjX2fBPIXrKlk0FQWg.OorR8v8S0fmoha6szwjGXw"
+      idToken:
+        type: string
+        description: "The Id token"
+        example: "eyJraWQiOiI5OFMrSVU5ckxmdTUzZlFKVlJuY01YbjhRMlwvWmlTXC9xSmdaNW1UaHZOdjg9IiwiYWxnIjoiUlMyNTYifQ.eyJzdWIiOiIzYmNjZDZkMC0xNWI1LTQ1NTgtODMyMS1hYTAyNjI1ZWQxN2EiLCJjdXN0b206bm9tZSI6IkNvbGV0YSBBZG1pbiBVc2VyIiwiZW1haWxfdmVyaWZpZWQiOnRydWUsImlzcyI6Imh0dHBzOlwvXC9jb2duaXRvLWlkcC51cy13ZXN0LTIuYW1hem9uYXdzLmNvbVwvdXMtd2VzdC0yX2pZbHRuYzFjMCIsImN1c3RvbTppZCI6ImI1dzQwTEFXajZ6b2sxRHFvZFJsOVhHcVB2M2FOSlpFIiwiY29nbml0bzp1c2VybmFtZSI6IjNiY2NkNmQwLTE1YjUtNDU1OC04MzIxLWFhMDI2MjVlZDE3YSIsImF1ZCI6IjNycDlibGRvYXFlbTZsZmozbjJ1bDExbWI5IiwiZXZlbnRfaWQiOiJmZWE3NmE3Ny04NjcxLTRmNDAtOGVhNS1mZjA4YmQxN2FhNjEiLCJ0b2tlbl91c2UiOiJpZCIsImF1dGhfdGltZSI6MTYzMzcxODU5OSwiY3VzdG9tOmVtcHJlc2FJZCI6IndOejN5a1k4UEVKQXhuZTlYVzJaZ3FLR3ByNlJPajRMIiwiZXhwIjoxNjMzNzIwMzk5LCJpYXQiOjE2MzM3MTg1OTksImVtYWlsIjoiY29sZXRhK2FkbWluYmJjZUByYXJvbGFicy5jb20uYnIifQ.kkh2RDlN0FqvTHK5sMmYqwlwSjLa8bX3EtBpeineQTmNjjEnoMwGYNa-ZUeWKcwzjbnEcdvLDD9_CUPIz8IEkQw5NpcJMYOup5p_M35KSOxLUjpwigSspffBeobQcbc0_vzQslk0JFfqsQ8zOgyHypI0xZgOUg66t197twngaHaSHBESwYROyBsblRULJ4whpmpOHDhcC5uJTDLTTmEvJZxGnNhq-iAuZjHqvDzuRsRsHEuE3SSul1MzNqtN1VTlo8BxRfo1S3ThW_OX7IJ9m1c-ELN_wSycdGcrqtwkLKSZyzwdiCA_Whr2UjMH1mkcSoGAKi5mFoS7iBsOA08fGw"
+  RefreshTokenResponse:
+    required:
+      - accessToken
+      - expiresIn
+      - idToken
+    properties:
+      accessToken:
+        type: string
+        description: "Informa access token"
+        example: "eyJraWQiOiJ5Tzd6MVE3a0hOMlI3UGdLMndlMmcxQnNNcEUrWVZCXC9jRTducktoTHFBTT0iLCJhbGciOiJSUzI1NiJ9.eyJzdWIiOiIzYmNjZDZkMC0xNWI1LTQ1NTgtODMyMS1hYTAyNjI1ZWQxN2EiLCJldmVudF9pZCI6ImIwMWVmOGRhLWMwOWYtNGY3MS1hOWQ5LTEzZGVlMzk4Yzg2NCIsInRva2VuX3VzZSI6ImFjY2VzcyIsInNjb3BlIjoiYXdzLmNvZ25pdG8uc2lnbmluLnVzZXIuYWRtaW4iLCJhdXRoX3RpbWUiOjE2MzI0OTY1ODcsImlzcyI6Imh0dHBzOlwvXC9jb2duaXRvLWlkcC51cy13ZXN0LTIuYW1hem9uYXdzLmNvbVwvdXMtd2VzdC0yX2pZbHRuYzFjMCIsImV4cCI6MTYzMjUwMDE4NiwiaWF0IjoxNjMyNDk2NTg3LCJqdGkiOiJjMmJiNDAwMy05MjZhLTRmMjMtYTkxYy0xMmYzMzhiMjk3OTAiLCJjbGllbnRfaWQiOiIzcnA5Ymxkb2FxZW02bGZqM24ydWwxMW1iOSIsInVzZXJuYW1lIjoiM2JjY2Q2ZDAtMTViNS00NTU4LTgzMjEtYWEwMjYyNWVkMTdhIn0.Om9ssKVuSJXTIbZHsCKNqCTBTP291h0sJWcr6XbxEp95XDqOqb6keqe0FRZEMtHo6RZA7YE05HUbgE9FkbOOImV68Zf_XjME0OZHJuXnp5IyK3dMha45d5AMz7_zYQbw_Wy24Sy4_ZK9j1knAI7q49tqJ9BkJmU5BYtmff8A0HAkH9u07jBRN0FgFXltVS-5q701GfEY2bsPSa6P8wbxMAAQWWy-hQ1dQHx-KaVtjdpUC0AbzKOBhLcekAO-JTNiIDvaJkgoS3zDGrOjwbJVN1MqtVZ1w3dBKsSsHqGcCPGxBVMeH5okOpHZqD0ZKkdbwBABunerHVn23-OtH6UyxQ"
+      expiresIn:
+        type: number
+        description: "Informa o tempo até a expiração do token em segundos"
+        example: 3600
+      idToken:
+        type: string
+        description: "Informa Id token"
+        example: "eyJraWQiOiI5OFMrSVU5ckxmdTUzZlFKVlJuY01YbjhRMlwvWmlTXC9xSmdaNW1UaHZOdjg9IiwiYWxnIjoiUlMyNTYifQ.eyJzdWIiOiIzYmNjZDZkMC0xNWI1LTQ1NTgtODMyMS1hYTAyNjI1ZWQxN2EiLCJjdXN0b206bm9tZSI6IkNvbGV0YSBBZG1pbiBVc2VyIiwiZW1haWxfdmVyaWZpZWQiOnRydWUsImlzcyI6Imh0dHBzOlwvXC9jb2duaXRvLWlkcC51cy13ZXN0LTIuYW1hem9uYXdzLmNvbVwvdXMtd2VzdC0yX2pZbHRuYzFjMCIsImN1c3RvbTppZCI6ImI1dzQwTEFXajZ6b2sxRHFvZFJsOVhHcVB2M2FOSlpFIiwiY29nbml0bzp1c2VybmFtZSI6IjNiY2NkNmQwLTE1YjUtNDU1OC04MzIxLWFhMDI2MjVlZDE3YSIsImF1ZCI6IjNycDlibGRvYXFlbTZsZmozbjJ1bDExbWI5IiwiZXZlbnRfaWQiOiJmZWE3NmE3Ny04NjcxLTRmNDAtOGVhNS1mZjA4YmQxN2FhNjEiLCJ0b2tlbl91c2UiOiJpZCIsImF1dGhfdGltZSI6MTYzMzcxODU5OSwiY3VzdG9tOmVtcHJlc2FJZCI6IndOejN5a1k4UEVKQXhuZTlYVzJaZ3FLR3ByNlJPajRMIiwiZXhwIjoxNjMzNzIwMzk5LCJpYXQiOjE2MzM3MTg1OTksImVtYWlsIjoiY29sZXRhK2FkbWluYmJjZUByYXJvbGFicy5jb20uYnIifQ.kkh2RDlN0FqvTHK5sMmYqwlwSjLa8bX3EtBpeineQTmNjjEnoMwGYNa-ZUeWKcwzjbnEcdvLDD9_CUPIz8IEkQw5NpcJMYOup5p_M35KSOxLUjpwigSspffBeobQcbc0_vzQslk0JFfqsQ8zOgyHypI0xZgOUg66t197twngaHaSHBESwYROyBsblRULJ4whpmpOHDhcC5uJTDLTTmEvJZxGnNhq-iAuZjHqvDzuRsRsHEuE3SSul1MzNqtN1VTlo8BxRfo1S3ThW_OX7IJ9m1c-ELN_wSycdGcrqtwkLKSZyzwdiCA_Whr2UjMH1mkcSoGAKi5mFoS7iBsOA08fGw"
+  ActionEnum:
+    type: string
+    example: "Action"
+    enum:
+      - Login
+      - Logout
+      - Expired

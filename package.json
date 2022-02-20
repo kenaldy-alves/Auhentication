@@ -1,0 +1,96 @@
+{
+  "private": true,
+  "name": "users_api",
+  "version": "1.0.0",
+  "release": {
+    "branch": "master",
+    "plugins": [
+      "@semantic-release/commit-analyzer",
+      "@semantic-release/release-notes-generator",
+      "@semantic-release/npm",
+      "@semantic-release/changelog",
+      "@semantic-release/git"
+    ]
+  },
+  "description": "Base API for Typescript NodeJS Agro",
+  "scripts": {
+    "dev": "npx nodemon --ext ts,yaml --ignore build --exec 'rm -rf build && tsc && node --inspect build/index.js'",
+    "compile": "npx tsc",
+    "start": "node build/index.js",
+    "test": "npx jest --no-cache --coverage",
+    "lint": "npx eslint -c .eslintrc.js src/**/*.ts",
+    "lint:fix": "npx eslint -c .eslintrc.js src/**/*.ts --fix",
+    "migration": "rm -rf build && tsc && node_modules/.bin/typeorm migration:run",
+    "migration:revert": "tsc && node_modules/.bin/typeorm migration:revert",
+    "migration:create": "node_modules/.bin/typeorm migration:create -n",
+    "docker-build": "docker build -t rarolabs:base-api .",
+    "docker-run": "docker run -p 8000:8000 -t rarolabs:base-api",
+    "commit": "git-cz"
+  },
+  "keywords": [
+    "typescript",
+    "restfull",
+    "api"
+  ],
+  "author": "kenaldy.tri@gmail.com",
+  "license": "proprietary",
+  "dependencies": {
+    "aws-sdk": "^2.642.0",
+    "axios": "^0.19.2",
+    "body-parser": "^1.19.0",
+    "class-validator": "^0.10.2",
+    "cls-rtracer": "^2.2.0",
+    "cors": "^2.8.5",
+    "dotenv": "^8.2.0",
+    "express": "^4.17.1",
+    "express-status-monitor": "1.2.7",
+    "hashids": "^2.2.1",
+    "jsonwebtoken": "^8.5.1",
+    "jwk-to-pem": "^2.0.4",
+    "middleware-logger": "^0.1.26",
+    "morgan": "^1.10.0",
+    "portable-fetch": "^3.0.0",
+    "reflect-metadata": "^0.1.13",
+    "swagger-routes": "^1.7.2",
+    "swagger-routes-express": "^3.1.1",
+    "swagger-ui-express": "^4.1.2",
+    "typedi": "^0.8.0",
+    "typeorm": "^0.2.24",
+    "uuidv4": "^6.2.6",
+    "yamljs": "^0.3.0"
+  },
+  "devDependencies": {
+    "@semantic-release/changelog": "^3.0.5",
+    "@semantic-release/commit-analyzer": "^6.3.2",
+    "@semantic-release/git": "^7.0.18",
+    "@semantic-release/npm": "^5.3.4",
+    "@semantic-release/release-notes-generator": "^7.3.2",
+    "@types/aws-sdk": "^2.7.0",
+    "@types/body-parser": "^1.17.1",
+    "@types/cors": "^2.8.6",
+    "@types/express-status-monitor": "^1.2.0",
+    "@types/jest": "^24.0.21",
+    "@types/jsonwebtoken": "^8.5.0",
+    "@types/jwk-to-pem": "^2.0.0",
+    "@types/morgan": "^1.9.1",
+    "@types/node": "^12.12.4",
+    "@types/swagger-ui-express": "^3.0.1",
+    "@types/yamljs": "^0.2.30",
+    "@typescript-eslint/eslint-plugin": "^2.23.0",
+    "@typescript-eslint/parser": "^2.23.0",
+    "cz-conventional-changelog": "^3.0.2",
+    "eslint": "^6.8.0",
+    "eslint-config-prettier": "^6.11.0",
+    "eslint-plugin-prettier": "^3.1.4",
+    "jest": "^24.9.0",
+    "nodemon": "^1.19.4",
+    "prettier": "^2.0.5",
+    "ts-jest": "^24.1.0",
+    "typescript": "^3.6.4"
+  },
+  "config": {
+    "commitizen": {
+      "path": "./node_modules/cz-conventional-changelog"
+    }
+  }
+}
